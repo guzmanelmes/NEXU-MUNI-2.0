@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Parámetros Generales - NEXU-MUNI{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen py-10" x-data="{ tab: 'haberes' }">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <h1 class="text-2xl font-bold text-gray-900 mb-6">Parámetros del Sistema</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-lg {% if category=='error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="border-b border-gray-200 mb-6">
+            <nav class="-mb-px flex space-x-8">
+                <button @click="tab = 'haberes'" :class="tab === 'haberes' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Tipos de Haberes
+                </button>
+                <button @click="tab = 'generos'" :class="tab === 'generos' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Géneros
+                </button>
+                <button @click="tab = 'estudios'" :class="tab === 'estudios' ? 'border-blue-500 text-blue-600' : 'border-transparent text-gray-500 hover:text-gray-700'" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Niveles de Estudio
+                </button>
+            </nav>
+        </div>
+
+        <div x-show="tab === 'haberes'" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">
+                <h3 class="font-bold text-gray-700 mb-4">Crear Tipo de Haber</h3>
+                <form action="{{ url_for('rrhh.mantenedor_parametros') }}" method="POST">
+                    <input type="hidden" name="tipo_parametro" value="haber">
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-medium text-gray-500">Código (Sin espacios)</label>
+                            <input type="text" name="codigo" class="w-full border p-2 rounded text-sm uppercase" placeholder="SUELDO_BASE" required>
+                        </div>
+                        <div>
+                            <label class="text-xs font-medium text-gray-500">Descripción</label>
+                            <input type="text" name="descripcion" class="w-full border p-2 rounded text-sm" placeholder="Sueldo Base Mensual" required>
+                        </div>
+                        <div class="space-y-2 pt-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="imponible" class="rounded text-blue-600" checked>
+                                <span class="ml-2 text-sm text-gray-600">Es Imponible</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="tributable" class="rounded text-blue-600" checked>
+                                <span class="ml-2 text-sm text-gray-600">Es Tributable</span>
+                            </label>
+                        </div>
+                        <button class="w-full bg-blue-600 text-white py-2 rounded text-sm hover:bg-blue-700">Guardar</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="md:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Código</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descripción</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Imp.</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Trib.</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for h in haberes %}
+                        <tr>
+                            <td class="px-4 py-3 text-xs font-mono font-bold">{{ h.codigo }}</td>
+                            <td class="px-4 py-3 text-sm">{{ h.descripcion }}</td>
+                            <td class="px-4 py-3 text-center">
+                                {% if h.es_imponible %}<span class="text-green-500">✔</span>{% else %}<span class="text-gray-300">-</span>{% endif %}
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                {% if h.es_tributable %}<span class="text-green-500">✔</span>{% else %}<span class="text-gray-300">-</span>{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div x-show="tab === 'generos'" class="grid grid-cols-1 md:grid-cols-2 gap-6" style="display: none;">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">
+                <form action="{{ url_for('rrhh.mantenedor_parametros') }}" method="POST" class="flex gap-2 items-end">
+                    <input type="hidden" name="tipo_parametro" value="genero">
+                    <div class="flex-1">
+                        <label class="text-xs font-medium text-gray-500">Nuevo Género</label>
+                        <input type="text" name="nombre" class="w-full border p-2 rounded text-sm" placeholder="Masculino" required>
+                    </div>
+                    <button class="bg-green-600 text-white px-4 py-2 rounded text-sm">Agregar</button>
+                </form>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <ul class="divide-y divide-gray-100">
+                    {% for g in generos %}
+                    <li class="px-6 py-3 text-sm text-gray-700">{{ g.nombre }}</li>
+                    {% else %}
+                    <li class="px-6 py-3 text-sm text-gray-400">Sin registros</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div x-show="tab === 'estudios'" class="grid grid-cols-1 md:grid-cols-2 gap-6" style="display: none;">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit">
+                <form action="{{ url_for('rrhh.mantenedor_parametros') }}" method="POST" class="flex gap-2 items-end">
+                    <input type="hidden" name="tipo_parametro" value="estudio">
+                    <div class="flex-1">
+                        <label class="text-xs font-medium text-gray-500">Nuevo Nivel de Estudio</label>
+                        <input type="text" name="nombre" class="w-full border p-2 rounded text-sm" placeholder="Universitario Completo" required>
+                    </div>
+                    <button class="bg-green-600 text-white px-4 py-2 rounded text-sm">Agregar</button>
+                </form>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+                <ul class="divide-y divide-gray-100">
+                    {% for e in estudios %}
+                    <li class="px-6 py-3 text-sm text-gray-700">{{ e.nombre }}</li>
+                    {% else %}
+                    <li class="px-6 py-3 text-sm text-gray-400">Sin registros</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
