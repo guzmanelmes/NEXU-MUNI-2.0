@@ -1,5 +1,8 @@
 from app.extensions import db
-from app.modules.rrhh.models.globales import Banco, AFP, Salud, Sexo, NivelEstudio, Estamento, TipoContrato, Programa, CuentaPresupuestaria
+from app.modules.rrhh.models.globales import (
+    Banco, AFP, Salud, Sexo, NivelEstudio, Estamento, 
+    TipoContrato, Programa, CuentaPresupuestaria
+)
 from datetime import datetime
 
 # =======================================================
@@ -257,7 +260,7 @@ def eliminar_estamento(id):
         return False, 'Registro en uso.'
 
 # =======================================================
-# 7. TIPOS DE CONTRATO (CRUD COMPLETO)
+# 7. TIPOS DE CONTRATO
 # =======================================================
 def obtener_tipos_contrato():
     return TipoContrato.query.order_by(TipoContrato.nombre).all()

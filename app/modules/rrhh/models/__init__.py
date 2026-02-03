@@ -1,18 +1,19 @@
 # app/modules/rrhh/models/__init__.py
 
-# 1. Catálogos Globales (Listas simples)
+# 1. Catálogos Globales (Listas simples + PROGRAMA está aquí ahora)
 from .globales import (
     Banco, AFP, Salud, Estamento, Feriado, 
-    Sexo, NivelEstudio, Autoridad, TipoHaber
+    Sexo, NivelEstudio, Autoridad, TipoHaber,
+    # --- IMPORTANTE: Programa, Cuenta y TipoContrato vienen de globales ---
+     CuentaPresupuestaria, TipoContrato
 )
 
 # 2. Organización (Jerarquía Municipal)
 from .organizacion import Unidad
 
 # 3. Personas (Funcionarios y sus datos)
-# ELIMINAMOS Nombramiento de aquí
 from .funcionarios import Persona, PersonaArchivo, HistorialAcademico
 
 # 4. Contratos (Vínculos laborales)
-# AGREGAMOS Nombramiento aquí
-from .contratos import Nombramiento, ContratoHonorario, Programa
+# ELIMINA 'Programa' de esta línea. Solo deja Nombramiento y ContratoHonorario.
+from .contratos import Nombramiento, ContratoHonorario
