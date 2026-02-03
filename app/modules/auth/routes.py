@@ -31,7 +31,7 @@ def login():
         
         # Redirección inteligente (si intentó entrar a una pag protegida)
         next_page = request.args.get('next')
-        return redirect(next_page or url_for('core.index'))
+        return redirect(next_page or url_for('core.dashboard'))
 
     return render_template('auth/login.html')
 

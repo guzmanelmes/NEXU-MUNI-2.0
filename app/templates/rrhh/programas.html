@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Gestión de Programas - NEXU-MUNI{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 min-h-screen py-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Programas Presupuestarios</h1>
+            <span class="text-sm text-gray-500">Gestión de Centros de Costo e Imputaciones</span>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="mb-6 p-4 rounded-lg {% if category=='error' %}bg-red-50 text-red-700 border-l-4 border-red-500{% else %}bg-green-50 text-green-700 border-l-4 border-green-500{% endif %} shadow-sm flex justify-between">
+                    {{ message }}
+                    <span class="cursor-pointer" onclick="this.parentElement.remove()">&times;</span>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 h-fit lg:col-span-1">
+                <div class="flex justify-between items-center mb-4 border-b pb-2">
+                    <h3 class="font-bold text-gray-800" id="titulo-programa">Nuevo Programa</h3>
+                    <button id="btn-cancelar-programa" onclick="cancelarEdicionPrograma()" class="hidden text-xs text-red-500 font-bold hover:underline">Cancelar</button>
+                </div>
+
+                <form id="form-programa" action="{{ url_for('rrhh.gestion_programas') }}" method="POST" enctype="multipart/form-data">
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase">Nombre Programa</label>
+                            <input type="text" id="input_prog_nombre" name="nombre" class="w-full border p-2 rounded text-sm focus:ring-indigo-500" placeholder="Ej: Programa de Salud Municipal" required>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs font-bold text-gray-500 uppercase">N° Decreto</label>
+                                <input type="text" id="input_prog_num" name="numero_decreto" class="w-full border p-2 rounded text-sm" required>
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-gray-500 uppercase">Fecha</label>
+                                <input type="date" id="input_prog_fecha" name="fecha_decreto" class="w-full border p-2 rounded text-sm" required>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase">Archivo Decreto (PDF)</label>
+                            <input type="file" name="archivo_decreto" accept=".pdf" class="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        </div>
+
+                        <button id="btn-guardar-programa" class="w-full bg-indigo-600 text-white py-2 rounded text-sm font-bold hover:bg-indigo-700 shadow transition transform active:scale-95">Guardar Programa</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="space-y-6 lg:col-span-2">
+                {% for p in programas %}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition hover:shadow-md">
+                    <div class="bg-gray-50 px-6 py-3 flex justify-between items-center border-b border-gray-200">
+                        <div>
+                            <h4 class="font-bold text-gray-900 text-sm uppercase flex items-center gap-2">
+                                {{ p.nombre }}
+                                {% if p.archivo_adjunto %}
+                                <a href="{{ url_for('static', filename='uploads/decretos/' + p.archivo_adjunto) }}" target="_blank" class="text-indigo-500 hover:text-indigo-700" title="Ver Decreto">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                </a>
+                                {% endif %}
+                            </h4>
+                            <div class="mt-1">
+                                <span class="text-[10px] text-gray-500 bg-white border px-2 py-0.5 rounded">Dec. {{ p.numero_decreto }} del {{ p.fecha_decreto.strftime('%d/%m/%Y') }}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="editarPrograma('{{ p.id }}', '{{ p.nombre }}', '{{ p.numero_decreto }}', '{{ p.fecha_decreto }}')" class="text-indigo-600 text-xs font-bold hover:underline">Editar</button>
+                            <a href="{{ url_for('rrhh.eliminar_programa', id=p.id) }}" onclick="return confirm('¿Borrar programa completo y sus cuentas?')" class="text-red-500 text-xs font-bold hover:underline">Eliminar</a>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-white">
+                        <div class="flex justify-between items-end mb-2">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Cuentas Presupuestarias</p>
+                        </div>
+                        
+                        <ul class="space-y-2 mb-3">
+                            {% for c in p.cuentas %}
+                            <li class="flex justify-between items-center bg-indigo-50 px-3 py-2 rounded border border-indigo-100 text-xs group">
+                                <div class="flex-1">
+                                    <span class="font-mono font-bold text-indigo-800 text-sm block">{{ c.codigo }}</span>
+                                    <span class="text-gray-600">{{ c.descripcion or 'Sin descripción' }}</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="text-right">
+                                        <div class="text-[10px] text-gray-500">Saldo Actual</div>
+                                        <div class="font-bold text-gray-800 text-sm">${{ "{:,.0f}".format(c.saldo_actual).replace(',', '.') }}</div>
+                                    </div>
+                                    <a href="{{ url_for('rrhh.eliminar_cuenta_presupuestaria', id=c.id) }}" class="text-red-300 hover:text-red-600 font-bold opacity-0 group-hover:opacity-100 transition" onclick="return confirm('¿Borrar cuenta?')">&times;</a>
+                                </div>
+                            </li>
+                            {% else %}
+                            <li class="text-xs text-gray-400 italic py-2">Este programa no tiene cuentas asignadas.</li>
+                            {% endfor %}
+                        </ul>
+
+                        <form action="{{ url_for('rrhh.agregar_cuenta_presupuestaria') }}" method="POST" class="flex gap-2 items-center pt-3 border-t border-dashed border-gray-200 mt-2">
+                            <input type="hidden" name="programa_id" value="{{ p.id }}">
+                            <div class="w-1/3">
+                                <input type="text" name="codigo" class="w-full border-gray-300 rounded text-xs p-2 font-mono focus:ring-indigo-500 focus:border-indigo-500" placeholder="215-21-..." required>
+                            </div>
+                            <div class="flex-1">
+                                <input type="text" name="descripcion" class="w-full border-gray-300 rounded text-xs p-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Glosa (Ej: Honorarios)">
+                            </div>
+                            <div class="w-1/4">
+                                <input type="number" name="monto_inicial" class="w-full border-gray-300 rounded text-xs p-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="$ Presupuesto" required>
+                            </div>
+                            <button class="bg-green-600 text-white p-2 rounded hover:bg-green-700 shadow transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                    <svg class="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900">No hay programas</h3>
+                    <p class="mt-1 text-sm text-gray-500">Comienza creando el primer programa presupuestario a la izquierda.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function editarPrograma(id, nombre, num, fecha) {
+        document.getElementById('titulo-programa').innerText = 'Editar Programa';
+        document.getElementById('btn-guardar-programa').innerText = 'Actualizar';
+        document.getElementById('btn-guardar-programa').classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+        document.getElementById('btn-guardar-programa').classList.add('bg-blue-600', 'hover:bg-blue-700');
+        document.getElementById('btn-cancelar-programa').classList.remove('hidden');
+        
+        const form = document.getElementById('form-programa');
+        form.action = "/rrhh/programas/editar/" + id;
+        
+        document.getElementById('input_prog_nombre').value = nombre;
+        document.getElementById('input_prog_num').value = num;
+        document.getElementById('input_prog_fecha').value = fecha;
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function cancelarEdicionPrograma() {
+        document.getElementById('titulo-programa').innerText = 'Nuevo Programa';
+        document.getElementById('btn-guardar-programa').innerText = 'Guardar Programa';
+        document.getElementById('btn-guardar-programa').classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+        document.getElementById('btn-guardar-programa').classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        document.getElementById('btn-cancelar-programa').classList.add('hidden');
+        
+        const form = document.getElementById('form-programa');
+        form.action = "{{ url_for('rrhh.gestion_programas') }}";
+        form.reset();
+    }
+</script>
+{% endblock %}

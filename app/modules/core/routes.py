@@ -1,15 +1,52 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
+from flask_login import login_required
+from sqlalchemy import func
+from datetime import datetime
+from app.extensions import db
 
-# Definimos el Blueprint principal (sin prefijo, es la raíz del sitio)
+# Importamos los modelos NUEVOS
+from app.modules.rrhh.models.funcionarios import Persona
+from app.modules.rrhh.models.contratos import ContratoHonorario, Programa
+# Nota: Si aún no migramos 'CuentaPresupuestaria' o 'EscalaViaticos', 
+# comentaremos esas líneas temporalmente para que no falle.
+
 core_bp = Blueprint('core', __name__)
 
 @core_bp.route('/')
-def index():
-    return """
-    <div style="font-family: sans-serif; text-align: center; padding: 50px;">
-        <h1 style="color: #2563eb;">Bienvenido a NEXU-MUNI 2.0 🚀</h1>
-        <p>Conexión exitosa a la base de datos y sistema modular activo.</p>
-        <br>
-        <a href="/auth/login" style="background-color: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Ir al Login</a>
-    </div>
-    """
+@core_bp.route('/dashboard')
+@login_required
+def dashboard():
+    try:
+        # 1. KPIs Básicos
+        total_funcionarios = Persona.query.count()
+        
+        # 2. KPIs Contratos (Si la tabla existe)
+        try:
+            total_contratos = ContratoHonorario.query.count()
+        except:
+            total_contratos = 0
+            
+        try:
+            total_programas = Programa.query.count()
+        except:
+            total_programas = 0
+        
+        # 3. KPI Financiero (Simulado por ahora hasta migrar Billetera)
+        saldo_total_global = 0 
+        
+        fecha_actual = datetime.now().strftime("%d/%m/%Y")
+
+        return render_template('dashboard.html',
+                               total_funcionarios=total_funcionarios,
+                               total_contratos=total_contratos,
+                               total_programas=total_programas,
+                               saldo_total_global=saldo_total_global,
+                               fecha_actual=fecha_actual)
+
+    except Exception as e:
+        print(f"Error Dashboard: {e}")
+        return render_template('dashboard.html', 
+                               total_funcionarios=0, 
+                               total_contratos=0, 
+                               saldo_total_global=0,
+                               fecha_actual=datetime.now().strftime("%d/%m/%Y"))

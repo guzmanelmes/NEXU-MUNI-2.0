@@ -25,3 +25,9 @@ def guardar_documento_digital(rut, nombre_visible, filename):
     except Exception as e:
         db.session.rollback()
         return False
+
+# --- NUEVA FUNCIÓN AGREGADA ---
+def buscar_persona_por_rut(rut):
+    """Busca una persona por su RUT exacto."""
+    # Filtramos por el RUT tal cual viene (con puntos y guión si así se guarda)
+    return Persona.query.filter_by(rut=rut).first()

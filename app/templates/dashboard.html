@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - NEXU-MUNI 2.0{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                Tablero de Gestión
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Resumen ejecutivo al {{ fecha_actual }}
+            </p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+        
+        <div class="bg-white overflow-hidden rounded-lg shadow border-l-4 border-blue-500">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="truncate text-sm font-medium text-gray-500">Dotación Personal</dt>
+                            <dd>
+                                <div class="text-lg font-medium text-gray-900">{{ total_funcionarios }}</div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden rounded-lg shadow border-l-4 border-green-500">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="truncate text-sm font-medium text-gray-500">Honorarios</dt>
+                            <dd>
+                                <div class="text-lg font-medium text-gray-900">{{ total_contratos }}</div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden rounded-lg shadow border-l-4 border-purple-500">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="truncate text-sm font-medium text-gray-500">Programas</dt>
+                            <dd>
+                                <div class="text-lg font-medium text-gray-900">{{ total_programas }}</div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white overflow-hidden rounded-lg shadow border-l-4 border-yellow-500">
+            <div class="p-5">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="truncate text-sm font-medium text-gray-500">Saldo Global</dt>
+                            <dd>
+                                <div class="text-lg font-medium text-gray-900">$ {{ saldo_total_global }}</div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Accesos Rápidos</h3>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        
+        <a href="{{ url_for('rrhh.mi_ficha') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+            <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 flex items-center">
+                <span class="text-blue-600 mr-2">👤</span> Mi Ficha Personal
+            </h5>
+            <p class="font-normal text-gray-700">Revisa tus datos, sube tu foto de perfil y gestiona tus documentos.</p>
+        </a>
+
+        <a href="{{ url_for('rrhh.gestion_programas') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+            <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 flex items-center">
+                <span class="text-green-600 mr-2">📂</span> Programas
+            </h5>
+            <p class="font-normal text-gray-700">Administra presupuestos, cuentas y decretos de programas.</p>
+        </a>
+
+        <a href="{{ url_for('rrhh.mantenedor_unidades') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+            <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 flex items-center">
+                <span class="text-purple-600 mr-2">⚙️</span> Unidades y Deptos
+            </h5>
+            <p class="font-normal text-gray-700">Administra el organigrama municipal y las dependencias.</p>
+        </a>
+
+        <a href="{{ url_for('rrhh.mantenedor_parametros') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+            <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-900 flex items-center">
+                <span class="text-indigo-600 mr-2">📊</span> Parámetros
+            </h5>
+            <p class="font-normal text-gray-700">Gestiona haberes, niveles de estudio y otros catálogos.</p>
+        </a>
+
+        <div class="block p-6 bg-gray-50 border border-gray-200 rounded-lg opacity-60 cursor-not-allowed relative">
+            <span class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">Pronto</span>
+            <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-500">🕒 Horas Extras</h5>
+            <p class="font-normal text-gray-500">Módulo de gestión de asistencia y H.E. en desarrollo.</p>
+        </div>
+
+        <div class="block p-6 bg-gray-50 border border-gray-200 rounded-lg opacity-60 cursor-not-allowed relative">
+            <span class="absolute top-2 right-2 bg-yellow-100 text-yellow-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">Pronto</span>
+            <h5 class="mb-2 text-xl font-bold tracking-tight text-gray-500">✈️ Viáticos</h5>
+            <p class="font-normal text-gray-500">Solicitud y decretos de cometidos funcionarios.</p>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
